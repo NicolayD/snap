@@ -1,50 +1,25 @@
 defmodule Snap.Nodes do
   @moduledoc """
-  Presents an interface for the Nodes API of a `Snap.Cluster`.
-  
-  [ElasticSearch Nodes API](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html)
-  [OpenSearch Nodes API](https://opensearch.org/docs/2.15/api-reference/nodes-apis/index/)
+  Presents an interface for the Nodes Info API of ElasticSearch.
+
+  If the Elasticsearch security features are enabled, you must have the monitor or manage cluster privilege to use this API.
+
+  If you use the OpenSearch Security plugin, make sure you have the appropriate permissions: cluster:monitor/nodes/info.
+
+  [ElasticSearch Nodes Info API](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-info.html)
+  [OpenSearch Nodes Info API](https://opensearch.org/docs/latest/api-reference/nodes-apis/nodes-info/)
   """
-  
+
   @doc """
-  GET /_nodes/stats
+  GET /_nodes
   """
-  def stats(cluster, opts \\ []) do    
-    Snap.get(cluster, "/_nodes/stats", [], [], opts)
-  end
-  
-  @doc """
-  GET /_nodes/<node_id>/stats
-  """
-  def node_stats(cluster, node_id, opts \\ []) do    
-    Snap.get(cluster, "/_nodes/#{node_id}/stats", [], [], opts)
-  end
-  
-  @doc """
-  GET /_nodes/stats/<metric>
-  """
-  def metrics(cluster, metric, opts \\ []) do    
-    Snap.get(cluster, "/_nodes/stats/#{metric}", [], [], opts)
-  end
-  
-  @doc """
-  GET /_nodes/<node_id>/stats/<metric>
-  """
-  def node_metrics(cluster, node_id, metric, opts \\ []) do    
-    Snap.get(cluster, "/_nodes/#{node_id}/stats/#{metric}", [], [], opts)
-  end
-  
-  @doc """
-  GET /_nodes/stats/<metric>/<index_metric>  
-  """
-  def index_metrics(cluster, metric, index_metric, opts \\ []) do    
-    Snap.get(cluster, "/_nodes/stats/#{metric}/#{index_metric}", [], [], opts)
-  end
-  
-  @doc """
-  GET /_nodes/<node_id>/stats/<metric>/<index_metric>
-  """
-  def node_index_metrics(cluster, node_id, metric, index_metric, opts \\ []) do    
-    Snap.get(cluster, "/_nodes/#{node_id}/stats/#{metric}/#{index_metric}", [], [], opts)
+  @spec info(module()) :: Cluster.result()
+  @spec info(module(), Keyword.t()) :: Cluster.result()
+  def info(cluster, filters \\ [], opts \\ []) do
+    nodes = "/_nodes/" <> Keyword.get(filters, :nodes, "")
+    metrics = Keyword.get(filters, :metrics, "")
+
+    url = nodes <> metrics
+    Snap.get(cluster, url, [], [], opts)
   end
 end
